@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#3b1029" />
+  <title>Una invitación para mi princesa ❤️</title>
+  <style>
+    :root {
+      --rose: #ff6f9f;
+      --pink: #ffc0d6;
+      --cream: #fff5f7;
+      --wine: #3b1029;
+      --wine2: #5b183d;
+      --gold: #ffe3a4;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; min-height: 100vh; overflow-x: hidden;
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(ellipse at 20% 15%, rgba(255,111,159,.20), transparent 35%),
+        radial-gradient(ellipse at 85% 80%, rgba(255,227,164,.12), transparent 32%),
+        linear-gradient(145deg, #210a1b, var(--wine) 48%, #1b0918);
+    }
+    button { font: inherit; }
+    .screen {
+      display: none; min-height: 100svh; width: 100%;
+      padding: 28px 18px; align-items: center; justify-content: center;
+      position: relative; isolation: isolate;
+    }
+    .screen.active { display: flex; animation: fadeIn .75s ease both; }
+    .content { width: min(100%, 650px); text-align: center; position: relative; z-index: 2; }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: .22em; font: 11px/1.6 Arial, sans-serif;
+      color: var(--gold); opacity: .9;
+    }
+    h1, h2 { font-weight: normal; line-height: 1.12; margin: 12px 0 16px; }
+    h1 { font-size: clamp(2.2rem, 9vw, 4.6rem); }
+    h2 { font-size: clamp(1.8rem, 7vw, 3rem); }
+    p { font-size: clamp(1rem, 3.6vw, 1.2rem); line-height: 1.7; }
+    .soft { color: #f6dce7; }
+    .tiny { font: 12px/1.6 Arial, sans-serif; color: #d9b7c7; }
+    .glow-heart {
+      border: 0; background: transparent; color: #ff5f99; cursor: pointer;
+      font-size: clamp(100px, 30vw, 170px); line-height: 1;
+      filter: drop-shadow(0 0 12px rgba(255,65,130,.45));
+      animation: heartbeat 1.25s ease-in-out infinite;
+      transition: transform .2s ease, filter .2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .glow-heart:active { transform: scale(.9); }
+    .heart-wrap { position: relative; display: inline-grid; place-items: center; margin: 20px 0 12px; }
+    .heart-halo {
+      position: absolute; width: 75%; aspect-ratio: 1; border-radius: 50%;
+      background: rgba(255,80,140,.13); filter: blur(22px); pointer-events: none;
+    }
+    .progress { width: min(240px, 70%); height: 5px; margin: 20px auto 10px; background: #ffffff20; border-radius: 99px; overflow: hidden; }
+    .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--rose), var(--gold)); border-radius: inherit; transition: width .3s ease; }
+    .pill {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border: 1px solid #ffc0d65c; border-radius: 999px; padding: 13px 22px;
+      color: white; background: #ffffff0d; cursor: pointer; margin-top: 12px;
+      transition: transform .2s, background .2s, border-color .2s;
+    }
+    .pill:hover { transform: translateY(-2px); background: #ffffff18; border-color: #ffc0d6; }
+    .pill.primary { background: linear-gradient(135deg, #ff6f9f, #d83f80); border: 0; box-shadow: 0 8px 25px #e34d8750; }
+    .pill.primary:hover { background: linear-gradient(135deg, #ff8bb2, #e84e91); }
+    .envelope {
+      width: 135px; height: 95px; margin: 0 auto 25px; position: relative;
+      background: linear-gradient(145deg, #ffd3e2, #ff9fbe); border-radius: 9px;
+      box-shadow: 0 12px 35px #ff5f9930; cursor: pointer;
+      animation: float 3s ease-in-out infinite;
+    }
+    .envelope:before {
+      content: ""; position: absolute; inset: 0;
+      background: #ffb4ce; clip-path: polygon(0 0, 50% 58%, 100% 0);
+      border-radius: 9px 9px 0 0;
+    }
+    .envelope:after {
+      content: "♥"; position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%);
+      color: #b62f68; font-size: 28px;
+    }
+    .letter {
+      background: linear-gradient(145deg, #fff8f2, #ffe7ef);
+      color: #632545; border-radius: 22px; padding: clamp(24px, 6vw, 42px);
+      box-shadow: 0 20px 65px #00000038; border: 1px solid #fff8;
+      text-align: center; position: relative;
+    }
+    .letter:before { content: "✦  ♡  ✦"; color: #d76b91; letter-spacing: .4em; display: block; margin-bottom: 18px; }
+    .letter p { color: #75415a; }
+    .signature { color: #bd467a; font-style: italic; font-size: 1.3rem; margin-top: 20px; }
+    .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 28px 0 18px; text-align: left; }
+    .choice {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+      color: var(--cream); border: 1px solid #ffc0d64a; border-radius: 22px;
+      padding: 20px; background: linear-gradient(155deg, #ffffff12, #ffffff05);
+      cursor: pointer; min-height: 235px; text-align: left;
+      transition: transform .25s, border-color .25s, background .25s, box-shadow .25s;
+    }
+    .choice:hover { transform: translateY(-5px); border-color: var(--pink); background: #ffffff13; }
+    .choice.selected { border-color: var(--gold); box-shadow: 0 0 0 2px #ffe3a42b, 0 12px 30px #0002; background: #ffe3a411; }
+    .choice .emoji { font-size: 35px; }
+    .choice strong { font-size: 1.22rem; line-height: 1.3; font-weight: normal; }
+    .choice small { color: #e5c7d5; font: 13px/1.6 Arial, sans-serif; }
+    .choice .pick { margin-top: auto; color: var(--gold); font: 12px Arial, sans-serif; }
+    .loader-heart { font-size: 55px; display: inline-block; animation: heartbeat .8s infinite; }
+    .loader-track { height: 4px; border-radius: 9px; background: #ffffff20; width: min(280px, 75%); margin: 28px auto 0; overflow: hidden; }
+    .loader-track span { display: block; width: 0; height: 100%; background: var(--pink); animation: load 2.2s ease forwards; }
+    .sparkle { position: fixed; z-index: 1; pointer-events: none; animation: drift linear infinite; opacity: .6; }
+    .burst-heart { position: fixed; z-index: 10; pointer-events: none; font-size: 22px; animation: burst 1.15s ease-out forwards; }
+    .final-card { border: 1px solid #ffe3a45c; border-radius: 24px; padding: 28px 22px; background: #ffffff0b; }
+    .final-heart { color: var(--rose); font-size: 38px; margin: 12px 0; animation: heartbeat 1.2s infinite; }
+    .footer-note { margin-top: 25px; font: 11px/1.6 Arial, sans-serif; color: #caa9ba; }
+    @keyframes heartbeat { 0%,100% { transform: scale(1); } 12% { transform: scale(1.08); } 24% { transform: scale(1); } 38% { transform: scale(1.12); } 52% { transform: scale(1); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-9px) rotate(2deg); } }
+    @keyframes drift { from { transform: translateY(110vh) rotate(0); } to { transform: translateY(-15vh) rotate(300deg); } }
+    @keyframes burst { 0% { transform: translate(0,0) scale(.4) rotate(0); opacity: 1; } 100% { transform: translate(var(--dx),var(--dy)) scale(1.5) rotate(var(--rot)); opacity: 0; } }
+    @keyframes load { to { width: 100%; } }
+    @media (max-width: 520px) {
+      .choices { grid-template-columns: 1fr; }
+      .choice { min-height: 0; }
+      .choice .pick { margin-top: 0; }
+      .screen { padding: 24px 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="ambient" aria-hidden="true"></div>
+
+  <main>
+    <section class="screen active" id="welcome">
+      <div class="content">
+        <div class="eyebrow">Una pequeña sorpresa para ti</div>
+        <h1>Hola, mi <span style="color:#ff9cbd">princesa</span> ♡</h1>
+        <p class="soft">Preparé algo con mucho amor.<br>Pero para descubrirlo, necesito que hagas algo por mí…</p>
+        <div class="heart-wrap">
+          <div class="heart-halo"></div>
+          <button class="glow-heart" id="heartButton" aria-label="Presiona el corazón">♥</button>
+        </div>
+        <h2 style="font-size:clamp(1.2rem,5vw,1.7rem);color:#ffc0d6;margin:8px 0">Presiona, mi amor</h2>
+        <p class="tiny" id="heartHint">Tócalo varias veces para llenar este corazoncito de amor.</p>
+        <div class="progress"><span id="heartProgress"></span></div>
+        <p class="tiny" id="heartCount">0 de 7 latidos de amor ♡</p>
+      </div>
+    </section>
+
+    <section class="screen" id="loading">
+      <div class="content">
+        <div class="loader-heart">💗</div>
+        <h2>Un momentito, mi amor…</h2>
+        <p class="soft" id="loadingLine">Juntando todos los abrazos que te debo.</p>
+        <div class="loader-track"><span></span></div>
+        <p class="tiny">Hecho con amor, solo para ti ✨</p>
+      </div>
+    </section>
+
+    <section class="screen" id="envelopeScreen">
+      <div class="content">
+        <div class="eyebrow">Has desbloqueado una sorpresa</div>
+        <h2>Hay una cartita para ti 💌</h2>
+        <p class="soft">La escribí con el corazón. Toca el sobre para abrirla.</p>
+        <button class="envelope" id="openEnvelope" aria-label="Abrir la carta"></button>
+        <p class="tiny">Psst… contiene mucho amor.</p>
+      </div>
+    </section>
+
+    <section class="screen" id="letterScreen">
+      <div class="content">
+        <article class="letter">
+          <div class="eyebrow" style="color:#bd467a">Para mi persona favorita</div>
+          <h2>Esta invitación es para ti, mi amor ♡</h2>
+          <p>Mi princesa, tengo ganas de regalarte un ratito bonito, de esos en los que el mundo puede esperar y lo único importante es que estemos juntitos.</p>
+          <p>Quiero verte sonreír, escucharte hablar de tus cositas, reírnos por cualquier tontería y guardar otro recuerdo precioso contigo. No necesito un plan perfecto; para mí, lo especial es compartirlo contigo.</p>
+          <p>Así que preparé dos ideitas para nuestra próxima cita… y ahora quiero que elijas la que más ilusión te haga. 💗</p>
+          <div class="signature">Con todo mi amor, tu niño ♡</div>
+        </article>
+        <button class="pill primary" id="toChoices">Descubrir nuestros planes ✨</button>
+      </div>
+    </section>
+
+    <section class="screen" id="choicesScreen">
+      <div class="content">
+        <div class="eyebrow">Capítulo especial: nosotros dos</div>
+        <h2>¿Qué cita se te antoja, mi princesa? 💞</h2>
+        <p class="soft">Elige la que te haga más feliz. Lo más bonito será compartirla contigo.</p>
+        <div class="choices">
+          <button class="choice" data-choice="ancla" aria-pressed="false">
+            <span class="emoji">🍽️🌹</span>
+            <strong>Una comidita en El Ancla</strong>
+            <small>Salir juntitos, comer algo rico, platicar sin prisas y disfrutar de una cita bonita contigo.</small>
+            <span class="pick">Elegir esta cita ♡</span>
+          </button>
+          <button class="choice" data-choice="movie" aria-pressed="false">
+            <span class="emoji">🎬🍿</span>
+            <strong>Película, comidita y abrazos</strong>
+            <small>Buscar un lugar cómodo, poner una película en la compu, llevar algo rico y pasar un ratito solo para nosotros.</small>
+            <span class="pick">Elegir esta cita ♡</span>
+          </button>
+        </div>
+        <p class="tiny" id="choiceHint">Puedes tocar una opción para ver la sorpresa que esconde.</p>
+        <button class="pill primary" id="confirmChoice" disabled style="opacity:.5;cursor:not-allowed">Esta es mi elección 💗</button>
+      </div>
+    </section>
+
+    <section class="screen" id="finalScreen">
+      <div class="content">
+        <div class="final-card">
+          <div class="eyebrow">¡Tenemos una cita pendiente!</div>
+          <div class="final-heart">♥</div>
+          <h2 id="finalTitle">Elegiste nuestra cita</h2>
+          <p id="finalMessage" class="soft"></p>
+          <p>Ahora solo falta que nos pongamos de acuerdo en el día. 🥹💕</p>
+          <p class="signature">Tengo muchas ganas de verte, mi princesa.</p>
+        </div>
+        <button class="pill primary" id="surpriseButton">Una última cosita… 💌</button>
+        <div id="lastNote" class="letter" style="display:none;margin-top:18px">
+          <h2 style="font-size:1.7rem">Mi lugar favorito es contigo ♡</h2>
+          <p>Gracias por ser tú, por existir y por hacer que hasta los planes más sencillos se sientan especiales. Esta invitación no es solo para salir: es para recordarte que te elijo, que te extraño y que quiero seguir creando recuerdos bonitos a tu lado.</p>
+          <div class="signature">Te amo, mi colochita. ❤️</div>
+        </div>
+        <p class="footer-note">Una invitación hecha con cariño, pensando en ti.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const screens = [...document.querySelectorAll('.screen')];
+    function showScreen(id) {
+      screens.forEach(screen => screen.classList.toggle('active', screen.id === id));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Delicadas lucecitas flotando en el fondo.
+    const ambient = document.getElementById('ambient');
+    for (let i = 0; i < 19; i++) {
+      const sparkle = document.createElement('span');
+      sparkle.className = 'sparkle';
+      sparkle.textContent = ['✦', '♡', '·', '✧'][i % 4];
+      sparkle.style.left = (Math.random() * 100) + 'vw';
+      sparkle.style.animationDuration = (9 + Math.random() * 13) + 's';
+      sparkle.style.animationDelay = (-Math.random() * 18) + 's';
+      sparkle.style.fontSize = (10 + Math.random() * 13) + 'px';
+      sparkle.style.color = i % 3 === 0 ? '#ffe3a4' : '#ffc0d6';
+      ambient.appendChild(sparkle);
+    }
+
+    let heartTaps = 0;
+    const totalTaps = 7;
+    const heartButton = document.getElementById('heartButton');
+    heartButton.addEventListener('click', () => {
+      if (heartTaps >= totalTaps) return;
+      heartTaps++;
+      const scale = 1 + heartTaps * 0.16;
+      heartButton.style.transform = `scale(${scale})`;
+      heartButton.style.filter = `drop-shadow(0 0 ${12 + heartTaps * 5}px rgba(255,65,130,.8))`;
+      document.getElementById('heartProgress').style.width = (heartTaps / totalTaps * 100) + '%';
+      document.getElementById('heartCount').textContent = `${heartTaps} de ${totalTaps} latidos de amor ♡`;
+      document.getElementById('heartHint').textContent = heartTaps < totalTaps
+        ? ['Cada latidito lleva un poquito de mi amor.', '¿Ves cómo crece? Así de grande es mi cariño por ti.', 'Un toquecito más, mi princesa…'][heartTaps % 3]
+        : '¡Nuestro corazoncito está llenito de amor! 💗';
+      if (heartTaps === totalTaps) {
+        heartButton.style.pointerEvents = 'none';
+        burstHearts(heartButton.getBoundingClientRect());
+        setTimeout(() => {
+          burstHearts({ left: innerWidth/2, top: innerHeight/2, width: 0, height: 0 });
+          showScreen('loading');
+          setTimeout(() => showScreen('envelopeScreen'), 2400);
+        }, 700);
+      }
+    });
+
+    function burstHearts(rect) {
+      const symbols = ['♥', '♡', '💗', '✦', '💕'];
+      for (let i = 0; i < 38; i++) {
+        const item = document.createElement('span');
+        item.className = 'burst-heart';
+        item.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        item.style.left = (rect.left + (rect.width || 0) / 2) + 'px';
+        item.style.top = (rect.top + (rect.height || 0) / 2) + 'px';
+        item.style.color = ['#ff6f9f', '#ffc0d6', '#ffe3a4', '#fff5f7'][i % 4];
+        item.style.setProperty('--dx', ((Math.random() - .5) * innerWidth * 1.05) + 'px');
+        item.style.setProperty('--dy', ((Math.random() - .5) * innerHeight * 1.05) + 'px');
+        item.style.setProperty('--rot', ((Math.random() - .5) * 400) + 'deg');
+        document.body.appendChild(item);
+        setTimeout(() => item.remove(), 1300);
+      }
+    }
+
+    document.getElementById('openEnvelope').addEventListener('click', () => {
+      burstHearts(document.getElementById('openEnvelope').getBoundingClientRect());
+      showScreen('letterScreen');
+    });
+    document.getElementById('toChoices').addEventListener('click', () => {
+      showScreen('loading');
+      document.getElementById('loadingLine').textContent = 'Preparando dos planecitos para nosotros…';
+      setTimeout(() => showScreen('choicesScreen'), 2100);
+    });
+
+    let selectedChoice = null;
+    const choiceButtons = [...document.querySelectorAll('.choice')];
+    const confirmButton = document.getElementById('confirmChoice');
+    choiceButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        selectedChoice = button.dataset.choice;
+        choiceButtons.forEach(item => {
+          const selected = item === button;
+          item.classList.toggle('selected', selected);
+          item.setAttribute('aria-pressed', String(selected));
+        });
+        document.getElementById('choiceHint').textContent = selectedChoice === 'ancla'
+          ? 'Una cenita rica y una plática bonita… ya me imaginé ese momento contigo. 🌹'
+          : 'Una película, comidita y tu compañía: un plan sencillo que puede ser precioso. 🍿';
+        confirmButton.disabled = false;
+        confirmButton.style.opacity = '1';
+        confirmButton.style.cursor = 'pointer';
+      });
+    });
+
+    confirmButton.addEventListener('click', () => {
+      if (!selectedChoice) return;
+      if (selectedChoice === 'ancla') {
+        document.getElementById('finalTitle').textContent = '¡Cita en El Ancla! 🍽️🌹';
+        document.getElementById('finalMessage').textContent = 'Nos espera una comidita rica, conversaciones bonitas y un ratito para nosotros. Ya quiero sentarme frente a ti, mirarte y disfrutar de nuestra cita.';
+      } else {
+        document.getElementById('finalTitle').textContent = '¡Película y comidita juntitos! 🎬🍿';
+        document.getElementById('finalMessage').textContent = 'Vamos a buscar un lugar cómodo, elegir una película, llevar algo rico y disfrutar de estar juntitos sin tener que hacer nada extraordinario para pasarla bonito.';
+      }
+      burstHearts({ left: innerWidth/2, top: innerHeight/2, width: 0, height: 0 });
+      showScreen('finalScreen');
+    });
+
+    document.getElementById('surpriseButton').addEventListener('click', () => {
+      const note = document.getElementById('lastNote');
+      note.style.display = 'block';
+      document.getElementById('surpriseButton').textContent = 'Te mando un besito enorme 💋';
+      burstHearts(document.getElementById('surpriseButton').getBoundingClientRect());
+      note.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  </script>
+</body>
+</html>
